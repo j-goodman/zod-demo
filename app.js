@@ -18,6 +18,8 @@ const prompt = `Take the following text and extract a person profile. Return ONL
     "hobbies": <list of strings>,
 }
 
+Remember that age could potentially be given by the use in months, but should always be stored in the JSON object as years (rounded if necessary).
+
 Text: ${inputText}
 `
 
@@ -38,9 +40,13 @@ const runQuery = async () => {
     const data = await response.json()
     const parsed = JSON.parse(data.response)
 
-    const validatedPerson = personSchema.parse(parsed)
+    try {
+        const validatedPerson = personSchema.parse(parsed)
+        console.log(validatedPerson)
+    } catch {
+        console.log("I wasn't able to create a person record, I'm missing some information.")
+    }
     
-    console.log(validatedPerson)
 }
 
 runQuery()
