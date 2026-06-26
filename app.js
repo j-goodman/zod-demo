@@ -3,6 +3,13 @@ import { z } from 'zod'
 const model = "llama3.2"
 const inputText = process.argv.slice(2).join(' ') || "Jane, age 29, Toronto, likes hiking and cooking."
 
+const personSchema = z.object({
+    name: z.string().min(1),
+    age: z.number().int().min(0).max(150),
+    city: z.string().min(1),
+    hobbies: z.array(z.string().min(1)).max(5)
+})
+
 const prompt = `Take the following text and extract a person profile. Return ONLY valid JSON with no additional text before or after, use this exact template:
 {
     "name": <string>,
@@ -30,7 +37,10 @@ const runQuery = async () => {
 
     const data = await response.json()
     const parsed = JSON.parse(data.response)
-    console.log(parsed)
+
+    const validatedPerson = personSchema.parse(parsed)
+    
+    console.log(validatedPerson)
 }
 
 runQuery()
